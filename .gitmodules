@@ -1,0 +1,3 @@
+[submodule "hiddencraft"]
+	path = hiddencraft
+	url = git://github.com/hiddencraft/hiddencraft
