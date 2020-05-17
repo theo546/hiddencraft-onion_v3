@@ -1,0 +1,27 @@
+--- torsocks.py.org	2020-05-16 22:48:35.931078216 +0200
++++ torsocks.py	2020-05-17 00:54:34.620407000 +0200
+@@ -6,13 +6,13 @@
+ import socket
+ import re
+ 
+-ONION = re.compile('^[a-z2-7]{16}\.onion$')
++ONION = re.compile('^[a-z2-7]{16,56}\.onion$')
+ 
+ def onion_check(host):
+     if not isinstance(host, str):
+         junk = type(host)
+         raise TypeError('host must be a string, you gave me a %s' % junk)
+-    if not ONION.match(host):
++    if not ONION.match(host) or len(host) not in {22, 62}:
+         raise ValueError('host is not a valid .onion')
+ 
+ def create_connection(host_port, tor_host='127.0.0.1', tor_port=9050):
+@@ -32,7 +32,7 @@
+     if response != b'\x05\x00':
+         error = 'tor gave you junk: %s tor should be listening at %s:%d'
+         raise ValueError(error % (response, tor_host, tor_port))
+-    connect_details = bytearray((5, 1, 0, 3, 22))
++    connect_details = bytearray((5, 1, 0, 3, len(host)))
+     connect_details.extend(host.encode('ascii'))
+     connect_details.append(port >> 8)
+     connect_details.append(port & 0xFF)
